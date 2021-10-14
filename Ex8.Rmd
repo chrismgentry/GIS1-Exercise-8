@@ -1,0 +1,286 @@
+---
+title: "Exercise 8: Digital Elevation Models <br><small>Geographic Information Systems 1 Lab</small></br>"
+author: "GEOG 3150"
+output:
+  html_notebook:
+    df_print: paged
+    rows.print: 10
+    theme: cosmo
+    highlight: breezedark
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document: default
+  html_document:
+    toc: yes
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+  mode: gfm
+---
+
+```{=html}
+<style type="text/css">
+
+h1.title {
+  font-size: 40px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+  text-align: center;
+}
+
+h4.author { /* Header 4 - and the author and data headers use this too  */
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+  text-align: center;
+}
+
+body {
+  font-family: Helvetica;
+  font-size: 12pt;
+}
+
+.zoom {
+  transform-origin: 40% 50% 0;
+  transition: transform .2s;
+  margin: 0 auto;
+}
+.zoom img{
+	width:auto;
+	height:auto;	
+}
+.zoom:hover {
+  transform: scale(2);
+}
+
+th, td {padding: 5px;}
+
+</style>
+
+```
+<hr></hr>
+
+This exercise will introduce digital elevation models, downloading data from a [Federal Emergency Management Agency](https://www.fema.gov/) ArcGIS Viewer, and create derive topographic datasets.
+
+# The Introduction
+
+Middle Tennessee has a history of [significant weather events](https://www.weather.gov/ohx/calendar) including more than two dozen major flooding events over the past 100yrs. Several precipitation events over the past decade have caused devastating flooding in Cheatman, Davidson, Humphreys, and Montgomery counties. These floods alone cost Tennessee more than $2.5 billion dollars and resulted in the loss of more than 50 lives. 
+
+A recent analysis of the historic 2019 floods in the midwest estimated more than 1.1 million acres of agricultural fields were flooded costing the US more than $3 billion dollars. This combined with the most recent economic outlook for rural communities in the 4th National Climate Assessment [report](https://nca2018.globalchange.gov/chapter/19#key-message-4) suggest an increase in economic vulnerabilities in the agricultural sectors of the Southeast. Based on your recent work for FEMA ([Exercise 4](https://chrismgentry.github.io/GIS1-Exercise-4/)) and MCEMA ([Exercise 2](https://chrismgentry.github.io/GIS1-Exercise-2/)), they recommended that the [Tennessee Emergency Management Agency](https://www.tn.gov/tema.html) and [Tennessee Department of Agriculture](https://www.tn.gov/agriculture.html) hire you to help analyze the impact of flooding on croplands in Montgomery County.
+
+In this exercise you will:
+
+-   Download hazard data from FEMA
+-   Develop topographically derived datasets from raster data
+-   Calculate geometric extend of vector data
+-   Create graphs of attribute information
+
+Software specific directions can be found for each step below. Please submit the answer to the questions and your final map by the due date.
+
+## Step One: The Data
+
+The data you will be using for this exercise comes from the [FEMA National Flood Hazard Layer digital viewer](https://hazards-fema.maps.arcgis.com/apps/webappviewer/index.html?id=8b0adb51996444d4879338b5529aa9cd) and is compiled from various sources including the Flood Rate Insurance Map (FIRM) which is the source of some flood-related definitions in this exercise.
+
+<details>
+<summary><big>View Directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></big></summary>
+
+To begin, open a new browser window/tab and go to the [FEMA NFHL digital viewer](https://hazards-fema.maps.arcgis.com/apps/webappviewer/index.html?id=8b0adb51996444d4879338b5529aa9cd). On the welcome page you will be greeted with a warning window. Click OK and then zoom into campus.
+
+<p align="center"><div class="zoom"><img src= "Images/fema-nfhl-homepage.png" alt="NFHL Homepage" style="width:100%"></div></p>
+
+When you are able to see campus at the same zoom level as in the image below, click on the image and you will see a pop-up box with options to download the information
+
+<p align="center"><div class="zoom"><img src= "Images/fema-nfhl-download.png" alt="NFHL Download" style="width:100%"></div></p>
+
+Click on the <b><u>Download</u> county GIS data</b> link and save the file in your project folder for this exercise. Unzip the compressed folder and view the information within the _Catalog Pane_. You should now see a number of possible shapefiles in the unzipped folder. The one you need to add to your map is **S_FLD_HAZ_AR.shp**.
+
+<p align="center"><img src= "Images/arcgis-flood-hazard-data.jpg" alt="Hazard Data in Catalog Pane" style="width:70%"></p>
+
+Examining the attribute table for the dataset you will see a number of different variables; some of them without data or with a value of -9999 which is used by a number of different data formats to mean no data. The two variables you will use for this exercise is the **FLD_ZONE** and **ZONE_SUBTY**. Notice that the FLD_ZONE field is populated with "X", "A", and "AE" values while the ZONE_SUBTY has three values "0.2 PCT Annual Chance Flood Hazard", "Area of Minimal Flood Hazard", and "Floodway". The following is a brief description of each:
+
+- **A**: a high-risk flood zone that has a one percent chance of flooding each year. Over the course of a 30-year mortgage, the likelihood of a flood is 26 percent. There are no detailed analyses of areas in Flood Zone A, so there are no depths or base flood elevations in this zone.
+- **AE**: a high-risk flood zone that present a one percent annual chance of flooding and a 26% chance over the life of a 30-year mortgage. These regions are clearly defined in Flood Insurance Rate Maps and are paired with detailed information about base flood elevations.
+- **X**: area determined to be outside the 500-year flood and protected by levee from 100- year flood.
+- **0.2 PCT Annual Chance Flood Hazard**: area with a moderate chance of flood equal to 0.2 percent annually. 
+- **Area of Minimal Flood Hazard**: area determined to be outside the 500-year flood and protected by levee from 100- year flood.
+- **Floodway**: the channel of a river or other watercourse and the adjacent land areas that must be reserved in order to discharge the base flood without cumulatively increasing the water surface elevation more than a designated height.
+
+For this analysis you will focus on A, AE, and 0.2 PCT Annual Chance Flood Hazard zones. While there are a number of ways to subset the data, in this exercise you will simply right-click on the dataset and select _Data > Export Features_. In the resulting window select the flood hazard data as the Input Feature, use the browse button to select the output location in your project folder, and give the \*.shp file a new name. Next, click the new expression button and use the following SQL:
+
+`Where FLD_ZONE is equal to A`
+
+Then click Add Clause...
+
+`Or Where FLD_ZONE is equal to AE`
+
+Then click Add Clause...
+
+`Or Where ZONE_SUBTY is equal to 0.2 PCT Annual Chance Flood Hazard`
+
+And finally click OK. This will create a new dataset that include only the selected variables.
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-flood-zone-expression.png" alt="Selecting only the flood zone information from above" style="width:100%"></div></p>
+
+<big><b>add crops and dem</b></big>
+
+<big><b>Question No. 1</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details>
+<summary><big>View directions in <b> [QGIS]{style="color: #006400"} </b></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 1</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details><summary><big>View directions in <b> [R]{style="color: #6495ED"} </b></span></big></summary>
+Before you begin, you will need to open the [Ex2 Colab Notebook](https://github.com/chrismgentry/GIS1-Exercise-8/blob/main/GIS1_EX8.ipynb) and insert **tocolab** after _github_ in the URL to open in the _Colab Environment_. As you have seen before, R requires various packages to complete certain analyses. In this exercise you will be using **tidyverse, OpenStreetMaps, ggfortify, maptools, and rgeos**. To install and load the packages we will use the following script:
+
+Blah...blah...blah...
+
+<big><b>Question No. 1</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+
+## Step Two: The Analyses
+
+Blah...blah...blah...
+
+<details>
+<summary><big>View Directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 2</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details>
+<summary><big>View Directions in <b> [QGIS]{style="color:#006400"} </b></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 2</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details>
+<summary><big>View Directions in <b> [R]{style="color:#6495ED"} </b></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 2</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+
+## Step Three: The Visualization
+
+Blah...blah...blah...
+
+<details><summary><big>View directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></span></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 3</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details><summary><big>View directions in <b> [QGIS]{style="color:#006400"} </b></span></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 3</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details><summary><big>View directions in <b> [R]{style="color:#6495ED"} </b></span></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 3</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+
+## Step Four: The Proposal
+
+Blah...blah...blah...
+
+<details><summary><big>View directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></span></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 4</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details><summary><big>View directions in <b> [QGIS]{style="color:#006400"} </b></span></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 4</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+<hr></hr>
+
+<details><summary><big>View directions in <b> [R]{style="color:#6495ED"} </b></span></big></summary>
+
+Blah...blah...blah...
+
+<big><b>Question No. 4</b></big>
+<blockquote>
+_Insert Text Here_
+</blockquote>
+
+</details>
+
+# The Write-Up
+
+Blah...blah...blah...
+
+When complete, send a link to your _Colab Notebook_ or word document with answers to Questions 1-4 and your completed map via email.
