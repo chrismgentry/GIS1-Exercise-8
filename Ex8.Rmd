@@ -120,15 +120,17 @@ Then click Add Clause...
 
 `Or Where ZONE_SUBTY is equal to 0.2 PCT Annual Chance Flood Hazard`
 
-And finally click OK. This will create a new dataset that include only the selected variables.
+And finally click OK. This will create a new dataset that includes only the selected variables.
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-flood-zone-expression.png" alt="Selecting only the flood zone information from above" style="width:100%"></div></p>
 
-<big><b>add crops and dem</b></big>
+Next, open a new tab in your browser to download the remaining data for this exercise from the exercise [**GitHub Page**](https://github.com/chrismgentry/GIS1-Exercise-8/tree/main/Data "Click Here"). The **montco_dem_feet.tif** is the digital elevation model that will be used to calculate contours and the **montco_crop_land** zip contains a shapefile of selected cropland data for Montgomery County from the _USDA National Agriculture Statistics Service_ [CropScape](https://nassgeodata.gmu.edu/CropScape/) Website. With this data downloaded to your project folder, add them to your map view. On the example below the names and symbology for the flood zones were changed to reflect their category description.
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-all-data-step1.png" alt="Data Example" style="width:100%"></div></p>
 
 <big><b>Question No. 1</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the range of values for the DEM of Montgomery County?_
 </blockquote>
 
 </details>
@@ -137,11 +139,32 @@ _Insert Text Here_
 <details>
 <summary><big>View directions in <b> [QGIS]{style="color: #006400"} </b></big></summary>
 
-Blah...blah...blah...
+To begin, open a new browser window/tab and go to the [FEMA NFHL digital viewer](https://hazards-fema.maps.arcgis.com/apps/webappviewer/index.html?id=8b0adb51996444d4879338b5529aa9cd). On the welcome page you will be greeted with a warning window. Click OK and then zoom into campus.
+
+<p align="center"><div class="zoom"><img src= "Images/fema-nfhl-homepage.png" alt="NFHL Homepage" style="width:100%"></div></p>
+
+When you are able to see campus at the same zoom level as in the image below, click on the image and you will see a pop-up box with options to download the information
+
+<p align="center"><div class="zoom"><img src= "Images/fema-nfhl-download.png" alt="NFHL Download" style="width:100%"></div></p>
+
+Click on the <b><u>Download</u> county GIS data</b> link and save the file in your project folder for this exercise. Unzip the compressed folder and view the information within the _Catalog Pane_. You should now see a number of possible shapefiles in the unzipped folder. The one you need to add to your map is **S_FLD_HAZ_AR.shp**.
+
+<p align="center"><img src= "Images/qgis-flood-hazard-data.jpg" alt="Hazard Data in Catalog Pane" style="width:70%"></p>
+
+Examining the attribute table for the dataset you will see a number of different variables; some of them without data or with a value of -9999 which is used by a number of different data formats to mean no data. The two variables you will use for this exercise is the **FLD_ZONE** and **ZONE_SUBTY**. Notice that the FLD_ZONE field is populated with "X", "A", and "AE" values while the ZONE_SUBTY has three values "0.2 PCT Annual Chance Flood Hazard", "Area of Minimal Flood Hazard", and "Floodway". The following is a brief description of each:
+
+- **A**: a high-risk flood zone that has a one percent chance of flooding each year. Over the course of a 30-year mortgage, the likelihood of a flood is 26 percent. There are no detailed analyses of areas in Flood Zone A, so there are no depths or base flood elevations in this zone.
+- **AE**: a high-risk flood zone that present a one percent annual chance of flooding and a 26% chance over the life of a 30-year mortgage. These regions are clearly defined in Flood Insurance Rate Maps and are paired with detailed information about base flood elevations.
+- **X**: area determined to be outside the 500-year flood and protected by levee from 100- year flood.
+- **0.2 PCT Annual Chance Flood Hazard**: area with a moderate chance of flood equal to 0.2 percent annually. 
+- **Area of Minimal Flood Hazard**: area determined to be outside the 500-year flood and protected by levee from 100- year flood.
+- **Floodway**: the channel of a river or other watercourse and the adjacent land areas that must be reserved in order to discharge the base flood without cumulatively increasing the water surface elevation more than a designated height.
+
+For this analysis you will focus on A, AE, and 0.2 PCT Annual Chance Flood Hazard zones.
 
 <big><b>Question No. 1</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the range of values for the DEM of Montgomery County?_
 </blockquote>
 
 </details>
@@ -154,23 +177,43 @@ Blah...blah...blah...
 
 <big><b>Question No. 1</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the range of values for the DEM of Montgomery County?_
 </blockquote>
 
 </details>
 
 ## Step Two: The Analyses
 
-Blah...blah...blah...
+In order to determine the elevations that are most susceptible to flooding you will need to create contours from the DEM. 
 
 <details>
 <summary><big>View Directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></big></summary>
 
-Blah...blah...blah...
+By either searching through the tools drop-down menu or by searching for it in the Geoprocessing Tools, open the `Contour` tool, provide the following parameters, and click Run:
+
+- Input raster = montco_dem_feet.tif
+- Output feature class = navigate to your project folder and save as a shapefile (\*.shp)
+- Countour interval = 20
+- Base contour = 100
+- Z factor = 1
+- Contour type = Contour
+- Maximum verticies per feature = leave blank
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-create-contours.png" alt="NFHL Download" style="width:100%"></div></p>
+
+You will now have contours added to your map view. The contours will encompass the entire county because they were created from the county DEM.
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-contours.png" alt="NFHL Download" style="width:100%"></div></p>
+
+While this information could be beneficial for other analyses, for this exercise you should clip the contour based on the flood zone dataset you created in [Step 1](https://chrismgentry.github.io/GIS1-Exercise-8/#11_Step_One:_The_Data). This will create a new dataset that includes only the elevations prone to flooding issues.
+
+Finally, because this exercise focuses on croplands that are susceptible to flooding, clip the cropland dataset to the select flood zones layer as well. Then you can use the symbology tool to give the data _unique values_ by _class_name_.
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-all-data-step2.png" alt="Data Example" style="width:100%"></div></p>
 
 <big><b>Question No. 2</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the range of elevations in flood prone areas?_
 </blockquote>
 
 </details>
@@ -203,11 +246,15 @@ _Insert Text Here_
 
 ## Step Three: The Visualization
 
-Blah...blah...blah...
+In this step you will create landscape views that mimic three dimensional surfaces and provide a custom color palette for the croplands based on data from the State of Tennessee, Department of Agriculture.
 
 <details><summary><big>View directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></span></big></summary>
 
 Blah...blah...blah...
+
+HILLSHADE
+
+CropScape color
 
 <big><b>Question No. 3</b></big>
 <blockquote>
@@ -281,6 +328,11 @@ _Insert Text Here_
 
 # The Write-Up
 
-Blah...blah...blah...
+When completing the report for FEMA please provide the following information:
+
+- Describe the elevation range that crops are most impacted by flood waters in Montgomery County.
+- What are the top five (5) crops most impacted by flood waters by area and what are the individual areas covered by these crops?
+- Of the grain crops in the question above that are listed [here](https://www.bloomberg.com/markets/commodities/futures/agriculture "Click Here"), what would be the financial loss if all those crops were lost to flood?
+  - Assuming 170 bushels per acre of corn and 50 bushels per acre for other grains.
 
 When complete, send a link to your _Colab Notebook_ or word document with answers to Questions 1-4 and your completed map via email.
