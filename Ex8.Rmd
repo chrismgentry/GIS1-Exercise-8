@@ -205,11 +205,11 @@ You will now have contours added to your map view. The contours will encompass t
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-contours.png" alt="NFHL Download" style="width:100%"></div></p>
 
-While this information could be beneficial for other analyses, for this exercise you should clip the contour based on the flood zone dataset you created in [Step 1](https://chrismgentry.github.io/GIS1-Exercise-8/#11_Step_One:_The_Data). This will create a new dataset that includes only the elevations prone to flooding issues.
-
-Finally, because this exercise focuses on croplands that are susceptible to flooding, clip the cropland dataset to the select flood zones layer as well. Then you can use the symbology tool to give the data _unique values_ by _class_name_.
+While this information could be beneficial for other analyses, for this exercise you should **clip** the contour based on the flood zone dataset you created in [Step 1](https://chrismgentry.github.io/GIS1-Exercise-8/#11_Step_One:_The_Data). This will create a new dataset that includes only the elevations prone to flooding issues.
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-all-data-step2.png" alt="Data Example" style="width:100%"></div></p>
+
+Finally, because this exercise focuses on croplands that are susceptible to flooding, **clip** the cropland dataset to the select flood zones layer as well. Then you can use the symbology tool to give the data _unique values_ by _class_name_.
 
 <big><b>Question No. 2</b></big>
 <blockquote>
@@ -250,15 +250,33 @@ In this step you will create landscape views that mimic three dimensional surfac
 
 <details><summary><big>View directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></span></big></summary>
 
-Blah...blah...blah...
+While there are a number of possible color palettes that could be used to display the crop information, the Department of Agriculture provides a [suggested color palette](https://github.com/chrismgentry/GIS1-Exercise-8/blob/main/Data/crop_legend_TN_2020.jpg "Open in New Tab") to be used for mapping croplands in Tennessee. 
 
-HILLSHADE
+With the symbology pane open for the flood prone croplands (which should be in unique values), click on the color box for the first record. This will open the _Format Polygon Symbol_ for the record where you can change the **color properties** for the symbol by clicking on the drop-down menu and clicking color properies. In the _Color Editor_ menu you can type in the HEX# value provided on the image and click OK. Then apply the changes. 
+<p align="center"><div class="zoom"><img src= "Images/arcgis-color-editor.png" alt="Input Hex Value Colors" style="width:100%"></div></p>
 
-CropScape color
+Repeat these steps for each of the values in the dataset based on the HEX values provided on the image. When complete, click _More_ and uncheck the box to "Show All Other Values". This will remove the "all other values" category from your dataset symbology.
+
+<p align="center"><img src= "Images/arcgis-remove-all-other.jpg" alt="Remove All Other Values" style="width:60%"></p>
+
+Next, you will use a technique called **hillshade** which creates a ["grayscale 3D representation of the terrain surface for qualitative visualization of topography."](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/hillshade-function.htm) Because the function produces a qualitative view it does not give absolute elevation values. However, you can use it in conjunction with other layers to provide enhanced, custom views of terrain. On the _Analysis Tab_ click the button for **Raster Functions**. In the Raster Functions pane, use the drop-down menu next to "Surface" and click _Hillshade_. In the _Hillshade Properties_ menu parameters select the following options and click "Create new layer":
+
+- Raster = montco_dem_feet
+- Hillshade Type = Multidirectional
+- Scaling = None
+- Z Factor = 1
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-hillshade.png" alt="Hillshade" style="width:100%"></div></p>
+
+With the hillshade created, reorder the layer in your table of content to place the hillshade layer below the DEM. In the symbology options (Raster Layer > Appearance) for the DEM, select an appropriate color scheme and make the DEM layer slightly transparent (play around with varying percentages) to proivde a three-dimensional look to Montromgery County.
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-3D-topography.png" alt="DEM over Hillshade" style="width:100%"></div></p>
+
+Now finalize your map by customizing the various layers to provide the optimal visualization of the data and adding all of the necessary elements.
 
 <big><b>Question No. 3</b></big>
 <blockquote>
-_Insert Text Here_
+_What were the range of values provided for the hillshade image and what do you think the values represent?_
 </blockquote>
 
 </details>
@@ -270,7 +288,7 @@ Blah...blah...blah...
 
 <big><b>Question No. 3</b></big>
 <blockquote>
-_Insert Text Here_
+_What were the range of values provided for the hillshade image and what do you think the values represent?_
 </blockquote>
 
 </details>
@@ -282,22 +300,24 @@ Blah...blah...blah...
 
 <big><b>Question No. 3</b></big>
 <blockquote>
-_Insert Text Here_
+_What were the range of values provided for the hillshade image and what do you think the values represent?_
 </blockquote>
 
 </details>
 
-## Step Four: The Proposal
+## Step Four: The Damage
 
-Blah...blah...blah...
+In order to visualize the potential impact of flooding on croplands and determine which crops are most susceptible you will need to create a graph of the information.
 
 <details><summary><big>View directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></span></big></summary>
 
-Blah...blah...blah...
+Right-click on the flood prone cropland dataset and go to _Create Chart > Bar Chart_. On the chart properties pane select _class_name_ as the Category, no aggregation, and add _area_ as the numeric field. To make the chart more presentable, sort the values by descending order on the Y-axis and navigate through the various options (series, axes, guides, format, general) and make any necessary changes to the graph. Keep in mind that the area values in the attribute table are in square feet. To convert this information to acres divide the area values (in ft^2^) by 43560.
+
+<p align="center"><div class="zoom"><img src= "Images/arcgis-cropland-chart.png" alt="Creating Chart of Data" style="width:100%"></div></p>
 
 <big><b>Question No. 4</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the flood prone area of tobacco in acres?_
 </blockquote>
 
 </details>
@@ -309,7 +329,7 @@ Blah...blah...blah...
 
 <big><b>Question No. 4</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the flood prone area of tobacco in acres?_
 </blockquote>
 
 </details>
@@ -321,18 +341,19 @@ Blah...blah...blah...
 
 <big><b>Question No. 4</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the flood prone area of tobacco in acres?_
 </blockquote>
 
 </details>
 
 # The Write-Up
 
-When completing the report for FEMA please provide the following information:
+When completing the report for TEMA and TDA please provide the following information:
 
 - Describe the elevation range that crops are most impacted by flood waters in Montgomery County.
-- What are the top five (5) crops most impacted by flood waters by area and what are the individual areas covered by these crops?
-- Of the grain crops in the question above that are listed [here](https://www.bloomberg.com/markets/commodities/futures/agriculture "Click Here"), what would be the financial loss if all those crops were lost to flood?
-  - Assuming 170 bushels per acre of corn and 50 bushels per acre for other grains.
+- What are the top five (5) <u>crops</u> most impacted by flood waters by area and what are the individual areas covered by these crops?
+- Of the grain crops in the question above that are listed [**here**](https://www.bloomberg.com/markets/commodities/futures/agriculture "Click Here"), what would be the financial loss if all those crops were lost to flood?
+  - For the calculations, assume 170 bushels per acre for corn and 50 bushels per acre for other grains.
+  - Use the price of wheat for any variety of wheat.
 
-When complete, send a link to your _Colab Notebook_ or word document with answers to Questions 1-4 and your completed map via email.
+When complete, send a link to your _Colab Notebook_ or word document with answers to Questions 1-4, the chart you created in [Step 4](https://chrismgentry.github.io/GIS1-Exercise-8/#14_Step_Four:_The_Proposal) and your completed map via email.
