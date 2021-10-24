@@ -160,7 +160,19 @@ Examining the attribute table for the dataset you will see a number of different
 - **Area of Minimal Flood Hazard**: area determined to be outside the 500-year flood and protected by levee from 100- year flood.
 - **Floodway**: the channel of a river or other watercourse and the adjacent land areas that must be reserved in order to discharge the base flood without cumulatively increasing the water surface elevation more than a designated height.
 
-For this analysis you will focus on A, AE, and 0.2 PCT Annual Chance Flood Hazard zones.
+For this analysis you will focus on A, AE, and 0.2 PCT Annual Chance Flood Hazard zones. In order to isolate those specific values you will click the _Select features using an expression_ button <img src= "Images/qgis-attribute-expression-button.jpg" alt="Select by Expression" width="20" height="20"> from the _S_FLD_HAZ_AR_ attribute table and use the following expression:
+
+```
+ "FLD_ZONE" = 'A' or  "FLD_ZONE" = 'AE' or  "ZONE_SUBTY" = '0.2 PCT ANNUAL CHANCE FLOOD HAZARD' 
+```
+
+To input the expression, expand the "Fields and Values" attributes, double-click on the _FLD_ZONE_ field and type **=**. Next, click the "All Unique Values" button in the _Values_ section of the window. This will show all options available under that field. Double-click on **A**. Now type **or** in the expression to add an or statement; meaning that you want to select a value of this _or_ this. Repeat the steps by adding the AE value from FLD_ZONE and finally adding the 0.2 PCT Annual Chance Flood Hazard from the ZONE_SUBTY. When your expression is complete, click the _Select Features_ button in the bottom right corner of the window. This will select all of the data that meets your criteria. Finally, using the same procedure as in [Exercise 4, Step 1](https://chrismgentry.github.io/GIS1-Exercise-4/#11_Step_One:_The_Data), right/CRTL click on the _S_FLD_HAZ_AR_ and select _Export > Save Selected Features As..._ to create a new dataset that includes only the selected values.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-flood-zone-expression.png" alt="Selecting only the flood zone information from above" style="width:100%"></div></p>
+
+Next, open a new tab in your browser to download the remaining data for this exercise from the exercise [**GitHub Page**](https://github.com/chrismgentry/GIS1-Exercise-8/tree/main/Data "Click Here"). The **montco_dem_feet.tif** is the digital elevation model that will be used to calculate contours and the **montco_crop_land** zip contains a shapefile of selected cropland data for Montgomery County from the _USDA National Agriculture Statistics Service_ [CropScape](https://nassgeodata.gmu.edu/CropScape/) Website. With this data downloaded to your project folder, add them to your map view. On the example below the names and symbology for the flood zones were changed to reflect their category description. This was accomplished through the symbology tab, selecting categorize, and writing an expression in the _Value_ field for _FLD_ZONE_ + _ZONE_SUBTY_  or by first selecting _FLD_ZONE_ and classifying that information and then changing the value to _ZONE_SUBTY_ and clicking **NO** when the "Delete Classification" warning pops-up and then classifying the new selection. Just be sure to use the <b>[-]{style="color: #FF0000"}</b> to remove any value that was not included in the expression above.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-all-data-step1.png" alt="Data Example" style="width:100%"></div></p>
 
 <big><b>Question No. 1</b></big>
 <blockquote>
@@ -199,17 +211,17 @@ By either searching through the tools drop-down menu or by searching for it in t
 - Contour type = Contour
 - Maximum verticies per feature = leave blank
 
-<p align="center"><div class="zoom"><img src= "Images/arcgis-create-contours.png" alt="NFHL Download" style="width:100%"></div></p>
+<p align="center"><div class="zoom"><img src= "Images/arcgis-create-contours.png" alt="Create Contours" style="width:100%"></div></p>
 
 You will now have contours added to your map view. The contours will encompass the entire county because they were created from the county DEM.
 
-<p align="center"><div class="zoom"><img src= "Images/arcgis-contours.png" alt="NFHL Download" style="width:100%"></div></p>
+<p align="center"><div class="zoom"><img src= "Images/arcgis-contours.png" alt="Contours" style="width:100%"></div></p>
 
-While this information could be beneficial for other analyses, for this exercise you should **clip** the contour based on the flood zone dataset you created in [Step 1](https://chrismgentry.github.io/GIS1-Exercise-8/#11_Step_One:_The_Data). This will create a new dataset that includes only the elevations prone to flooding issues.
+While this information could be beneficial for other analyses, for this exercise you should **clip** the contours based on the flood zone dataset you created in [Step 1](https://chrismgentry.github.io/GIS1-Exercise-8/#11_Step_One:_The_Data). This will create a new dataset that includes only the elevations prone to flooding issues.
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-all-data-step2.png" alt="Data Example" style="width:100%"></div></p>
 
-Finally, because this exercise focuses on croplands that are susceptible to flooding, **clip** the cropland dataset to the select flood zones layer as well. Then you can use the symbology tool to give the data _unique values_ by _class_name_.
+Finally, because this exercise focuses on croplands that are susceptible to flooding, **clip** the cropland dataset to the selected flood zones layer as well. Then you can use the symbology tool to give the data _unique values_ by _class_name_.
 
 <big><b>Question No. 2</b></big>
 <blockquote>
@@ -222,11 +234,30 @@ _What is the range of elevations in flood prone areas?_
 <details>
 <summary><big>View Directions in <b> [QGIS]{style="color:#006400"} </b></big></summary>
 
-Blah...blah...blah...
+Navigate to _Raster > Extraction > Contour..._ on the Menu Bar and in the resulting window input the following parameters and click Run:
+
+- Input layer = montoco_dem_feet.tif
+- Band number = Band 1: Band_1 (Gray)
+- Interval between contour lines = 20
+- Attribute name = ELEV
+- Offset from zero relative to which to interpret intervals = 100
+- Contours = You can create a temporary file or save it as a permanent shapefile file in your project folder.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-create-contours.png" alt="Create Contours" style="width:100%"></div></p>
+
+You will now have contours added to your map view. The contours will encompass the entire county because they were created from the county DEM.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-contours.png" alt="Contours" style="width:100%"></div></p>
+
+While this information could be beneficial for other analyses, for this exercise you should **clip** the contours based on the flood zone dataset you created in [Step 1](https://chrismgentry.github.io/GIS1-Exercise-8/#11_Step_One:_The_Data). This will create a new dataset that includes only the elevations prone to flooding issues.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-all-data-step2.png" alt="Data Example" style="width:100%"></div></p>
+
+Finally, because this exercise focuses on croplands that are susceptible to flooding, **clip** the cropland dataset to the selected flood zones layer as well. Then you can give the data _categorized_ symbology by _class_name_.
 
 <big><b>Question No. 2</b></big>
 <blockquote>
-_Insert Text Here_
+_What is the range of elevations in flood prone areas?_
 </blockquote>
 
 </details>
@@ -252,7 +283,8 @@ In this step you will create landscape views that mimic three dimensional surfac
 
 While there are a number of possible color palettes that could be used to display the crop information, the Department of Agriculture provides a [suggested color palette](https://github.com/chrismgentry/GIS1-Exercise-8/blob/main/Data/crop_legend_TN_2020.jpg "Open in New Tab") to be used for mapping croplands in Tennessee. 
 
-With the symbology pane open for the flood prone croplands (which should be in unique values), click on the color box for the first record. This will open the _Format Polygon Symbol_ for the record where you can change the **color properties** for the symbol by clicking on the drop-down menu and clicking color properies. In the _Color Editor_ menu you can type in the HEX# value provided on the image and click OK. Then apply the changes. 
+With the symbology pane open for the flood prone croplands (which should be in unique values), click on the color box for the first record. This will open the _Format Polygon Symbol_ for the record where you can change the **color properties** for the symbol by clicking on the drop-down menu and clicking color properies. In the _Color Editor_ menu you can type in the HEX# value provided on the palette image and click OK. Then apply the changes. 
+
 <p align="center"><div class="zoom"><img src= "Images/arcgis-color-editor.png" alt="Input Hex Value Colors" style="width:100%"></div></p>
 
 Repeat these steps for each of the values in the dataset based on the HEX values provided on the image. When complete, click _More_ and uncheck the box to "Show All Other Values". This will remove the "all other values" category from your dataset symbology.
@@ -268,7 +300,7 @@ Next, you will use a technique called **hillshade** which creates a ["grayscale 
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-hillshade.png" alt="Hillshade" style="width:100%"></div></p>
 
-With the hillshade created, reorder the layer in your table of content to place the hillshade layer below the DEM. In the symbology options (Raster Layer > Appearance) for the DEM, select an appropriate color scheme and make the DEM layer slightly transparent (play around with varying percentages) to proivde a three-dimensional look to Montromgery County.
+With the hillshade created, reorder the layers in your table of content to place the hillshade layer below the DEM. In the symbology options (Raster Layer > Appearance) for the DEM, select an appropriate color scheme and make the DEM layer slightly transparent (play around with varying percentages) to provide a three-dimensional look to Montgomery County.
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-3D-topography.png" alt="DEM over Hillshade" style="width:100%"></div></p>
 
@@ -284,7 +316,33 @@ _What were the range of values provided for the hillshade image and what do you 
 
 <details><summary><big>View directions in <b> [QGIS]{style="color:#006400"} </b></span></big></summary>
 
-Blah...blah...blah...
+While there are a number of possible color palettes that could be used to display the crop information, the Department of Agriculture provides a [suggested color palette](https://github.com/chrismgentry/GIS1-Exercise-8/blob/main/Data/crop_legend_TN_2020.jpg "Open in New Tab") to be used for mapping croplands in Tennessee. 
+
+Open the Layer Properties - Symbology window for the crop lands. Next double-click on the symbol for the first record. In the _symbol selector_ window click on the color to open the _select color_ window. In the _HTML notation_ selector, type in the corresponding value from the color palette above. Click OK on the select color and symbol selector windows and _Apply_ on the symbology window. 
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-color-editor.png" alt="Input Hex Value Colors" style="width:100%"></div></p>
+
+Repeat these steps for each of the values in the dataset based on the HTML values provided on the image. When complete, be sure to remove the "all other values" category.
+
+Next, you will use a technique called **hillshade** which creates a ["grayscale 3D representation of the terrain surface for qualitative visualization of topography."](https://pro.arcgis.com/en/pro-app/latest/help/analysis/raster-functions/hillshade-function.htm) Because the function produces a qualitative view it does not give absolute elevation values. However, you can use it in conjunction with other layers to provide enhanced, custom views of terrain. In the Geoprocessing Toolbox search for **Hillshade**. Select the option under _Raster terrain analysis > Hillshade_. In the new window choose the following parameters and click Run:
+
+- Elevation layer = montco_dem_feet
+- Z Factor = 1
+- Azimuth = 180
+- Vertical angle = 70
+- Hillshade = You can create a temporary file or save it as a permanent tif file in your project folder.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-hillshade-options.png" alt="Hillshade Options" style="width:100%"></div></p>
+
+With the hillshade created, reorder the layers to place the hillshade layer below the DEM. In the symbology options for the DEM, change the "Render Type" to **Singleband pseudocolor", select an appropriate color ramp and besure it is classified in the display. 
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-raster-symbology.png" alt="Raster Symbology Options" style="width:100%"></div></p>
+
+Make the DEM layer slightly transparent (play around with varying percentages) and click OK to provide a three-dimensional look to Montgomery County.
+
+<p align="center"><div class="zoom"><img src= "Images/qgis-3D-topography.png" alt="DEM over Hillshade" style="width:100%"></div></p>
+
+Now finalize your map by customizing the various layers and base layers to provide the optimal visualization of the data and adding all of the necessary elements.
 
 <big><b>Question No. 3</b></big>
 <blockquote>
@@ -311,7 +369,7 @@ In order to visualize the potential impact of flooding on croplands and determin
 
 <details><summary><big>View directions in <b> [ArcGIS Pro]{style="color:#ff4500"} </b></span></big></summary>
 
-Right-click on the flood prone cropland dataset and go to _Create Chart > Bar Chart_. On the chart properties pane select _class_name_ as the Category, no aggregation, and add _area_ as the numeric field. To make the chart more presentable, sort the values by descending order on the Y-axis and navigate through the various options (series, axes, guides, format, general) and make any necessary changes to the graph. Keep in mind that the area values in the attribute table are in square feet. To convert this information to acres divide the area values (in ft^2^) by 43560.
+Right-click on the flood prone cropland dataset and go to _Create Chart > Bar Chart_. On the chart properties pane select _class_name_ as the Category, no aggregation, and add _area_ as the numeric field. To make the chart more presentable, sort the values by descending order on the Y-axis and navigate through the various options (series, axes, guides, format, general) and make any necessary changes to the graph. Keep in mind that the area values in the attribute table/chart are in square feet. To convert this information to acres divide the area values (in ft^2^) by 43,560.
 
 <p align="center"><div class="zoom"><img src= "Images/arcgis-cropland-chart.png" alt="Creating Chart of Data" style="width:100%"></div></p>
 
@@ -325,7 +383,23 @@ _What is the flood prone area of tobacco in acres?_
 
 <details><summary><big>View directions in <b> [QGIS]{style="color:#006400"} </b></span></big></summary>
 
-Blah...blah...blah...
+In [Exercise 5, Step 4](https://chrismgentry.github.io/GIS1-Exercise-5/#14_Step_Four:_The_County_Commisson_Report) you went to _Plugins > Manage and Install Plugins_ on the Menu Bar and installed the Bivariate Legend plugin. Return to your QGIS map view (not the layout view) and repeat those same steps to install the **Data Plotly** plugin. This will add a _DataPlotly_ button <img src= "Images/qgis-data-plotly-button.jpg" alt="Shows the DataPlotly dock" width="20" height="20"> to your toolbar that opens a new pane to the right of the screen.
+
+Click on the _DataPlotly_ button and use the following parameters then click Create Plot:
+
+- Plot type = Bar Plot
+- Layer = The dataset you created that is only the croplands within the flood prone areas
+- X field = Class_Name
+- Y field = Area
+- Bar color = Your choice
+- Strok color = Your choice
+- Opacity = Your choice
+- Label text position = Automatic
+- Bar orientation = Vertical
+
+A new plot will appear once create plot is pressed. You can return to the DataPlotly home dock by pressing the dock button <img src= "Images/qgis-dataplotly-dock-button.jpg" alt="Shows the DataPlotly dock" width="20" height="20">, you can customize the chart using the configuration button <img src= "Images/qgis-dataplotly-configuration-button.jpg" alt="Configure DataPlotly" width="20" height="20">, view the chart with the chart button <img src= "Images/qgis-dataplotly-chart-button.jpg" alt="Display Chart" width="20" height="20"> and on the chart screen export the chart using the export button <img src= "Images/qgis-dataplotly-export-button.jpg" alt="Export chart" width="20" height="20"> in the bottom right corner of the chart window. When you make changes be sure to click "Update Plot" at the bottom to reload with your new options. When you have finished customizing the chart, export it and save it in your project folder.
+
+Keep in mind that the area values in the attribute table/chart are in square feet. To convert this information to acres divide the area values (in ft^2^) by 43,560.
 
 <big><b>Question No. 4</b></big>
 <blockquote>
