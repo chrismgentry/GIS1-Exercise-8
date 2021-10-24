@@ -397,6 +397,8 @@ Click on the _DataPlotly_ button and use the following parameters then click Cre
 - Label text position = Automatic
 - Bar orientation = Vertical
 
+<p align="center"><div class="zoom"><img src= "Images/qgis-data-plotly.png" alt="DataPlotly Dock" style="width:100%"></div></p>
+
 A new plot will appear once create plot is pressed. You can return to the DataPlotly home dock by pressing the dock button <img src= "Images/qgis-dataplotly-dock-button.jpg" alt="Shows the DataPlotly dock" width="20" height="20">, you can customize the chart using the configuration button <img src= "Images/qgis-dataplotly-configuration-button.jpg" alt="Configure DataPlotly" width="20" height="20">, view the chart with the chart button <img src= "Images/qgis-dataplotly-chart-button.jpg" alt="Display Chart" width="20" height="20"> and on the chart screen export the chart using the export button <img src= "Images/qgis-dataplotly-export-button.jpg" alt="Export chart" width="20" height="20"> in the bottom right corner of the chart window. When you make changes be sure to click "Update Plot" at the bottom to reload with your new options. When you have finished customizing the chart, export it and save it in your project folder.
 
 Keep in mind that the area values in the attribute table/chart are in square feet. To convert this information to acres divide the area values (in ft^2^) by 43,560.
